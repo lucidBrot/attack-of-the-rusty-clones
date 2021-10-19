@@ -43,7 +43,7 @@ Having a segment that no jedi protects is useful because it provides a clear sta
 
 ![](./notes/note2.jpg)
 
-###How to find the low-protected segment
+### How to find the low-protected segment
 
 This is where we want to start. How do we find it?
 
@@ -91,4 +91,18 @@ Since we are tracking the start positions anyway for [Option 2](#Option-2) of fi
 one list with all starts and ends for choosing the low-protected segment, a different one with only all ends for choosing the jedi after that?
 
 No. Because we need the memory for the $2n$ list anyway, and we only gain a constant factor in iteration speed that is offset by the same constant factor in sorting twice.
+
+## Rust
+
+### Parsing Input
+
+Complete example to read a line from a file and parse it to an integer:
+https://stackoverflow.com/a/29677167/2550406
+https://doc.rust-lang.org/std/primitive.str.html#method.parse
+
+Reading all lines from the file as an iterator:
+https://doc.rust-lang.org/rust-by-example/std_misc/file/read_lines.html
+
+Splitting the line into strings of numbers:
+https://stackoverflow.com/a/26643821/2550406
 
