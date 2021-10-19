@@ -1,0 +1,10 @@
+1
+5 3
+1 1
+1 1
+1 1
+2 2
+2 2
+
+# the idea of this test is that there are three segments
+# one has no jedi, one has two jedi, one has three jedi. no jedi overlaps to other segments.
