@@ -3,13 +3,7 @@
 //!
 //! we have `m` segments, with 1 <= m <= 10^9
 
-/// a Jedi is an interval including both start and end segments and anything in between.
-struct Jedi {
-    /// start and end should both be $\leq m$, which is the number of test cases
-    start: u32,
-    /// start and end should both be $\leq m$, which is the number of test cases
-    end: u32,
-}
+use std::io;
 
 /// a JediPos can either be a start or end position of a Jedi interval.
 trait JediPos {
@@ -50,4 +44,17 @@ fn main() {
     // run testcases
     // todo
     testcase(1,2);
+
+    // read from stdin
+    let reader = io::stdin();
+    let mut input_text = String::new();
+    reader.read_line(&mut input_text).expect("failed to read line");
+    let input_opt = input_text.trim().parse::<u32>();
+    let input_int = match input_opt {
+        Ok(smth) => smth,
+        Err(e) => {
+            panic!("Parsing Failed.");
+        }
+    };
+    println!("Parsed Integer {}", input_int);
 }
