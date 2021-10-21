@@ -106,3 +106,12 @@ https://doc.rust-lang.org/rust-by-example/std_misc/file/read_lines.html
 Splitting the line into strings of numbers:
 https://stackoverflow.com/a/26643821/2550406
 
+### Primitives
+
+![image-20211021084509234](README.assets/image-20211021084509234.png)
+
+### Error Handling
+
+https://blog.burntsushi.net/rust-error-handling/
+
+https://stackoverflow.com/questions/48430836/rust-proper-error-handling-auto-convert-from-one-error-type-to-another-with-que
