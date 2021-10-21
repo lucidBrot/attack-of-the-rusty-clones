@@ -81,6 +81,7 @@ fn main() -> Result<(), MainErrors> {
             Ok(vals) => vals,
             Err(e) => { return Err(MainErrors::StringSplitError(format!("{:?}", e))); }
         };
+        println!("Parsed m,n: {}, {}", m, n);
     }
 
     Ok(())
