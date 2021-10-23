@@ -33,8 +33,42 @@ enum MainErrors {
 /// m: number of segments, counting from 1
 /// n: number of jedi, counting from 1
 /// and a vec containing all jedi's start and end point
-fn testcase(m: u32, n: u16, workvec: Vec<JediPos>) {
-    // just for now
+fn testcase(m: u32, n: u16, positions: &Vec<JediPos>) {
+    // find best starting point by enumerating number of active jedi at each relevant segment.
+    // A "relevant segment" is one that a jedi starts or ends at, so the segments in `positions`.
+
+    // at the first segment, there will be two cases:
+    //   * it's a start: There will be 1 active jedi count
+    //   * it's an end : There will be -1 active jedi count
+    // There are at most ( 5*10^4 * 2 ) entries in the vec => i32
+    let mut current_num_active: i32 = 0;
+    let mut smallest_num_active: i32 = 0;
+    let mut sna_index : usize = 0;
+    let mut sna_is_set : bool = false; // the existence of this bool allows us to ignore the 
+                                       // initial value of the smallest_num_active variable,
+                                       // same for sna_index. That's just useful because rust
+                                       // insists on being able to prove that they are initialized,
+                                       // and it can't do that on an iterator. Because maybe, the
+                                       // loop is never run (the iterator is empty)
+    for (i, p) in positions.iter().enumerate() {
+        current_num_active += match p {
+            JediPos::Start(v) => 1,
+            JediPos::End(v) => -1,
+        };
+
+        if !sna_is_set || (current_num_active < smallest_num_active) {
+            sna_is_set = true;
+            smallest_num_active = current_num_active;
+            sna_index = i;
+        }
+
+        // if there are less than ten jedi, we can technically stop early.
+        // But we don't actually know. Because it could be that the starting point of the iteration
+        // was at a place where 100 jedi overlap, so the best place would be at a negative number
+        // and the value zero does not mean anything in absolute terms.
+    }
+    println!("Smallest number of Active Jedi is at index {} where the value is {}", sna_index, smallest_num_active);
+
 }
 
 /// Expects as input from stdin:
@@ -91,7 +125,9 @@ fn main() -> Result<(), MainErrors> {
 
         // sort that vec ascending
         positions.sort();
-        dbg!(positions);
+
+        // run testcase
+        testcase(m, n, &positions);
     }
 
     Ok(())
