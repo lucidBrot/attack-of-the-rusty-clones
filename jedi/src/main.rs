@@ -7,7 +7,8 @@ use anyhow;
 use std::convert::TryFrom;
 use std::io;
 use thiserror::Error;
-#[macro_use] extern crate text_io;
+#[macro_use]
+extern crate text_io;
 use whiteread::{parse_line, parse_string};
 
 /// a JediPos can either be a start or end position of a Jedi interval.
@@ -86,7 +87,7 @@ fn main() -> Result<(), MainErrors> {
     //          white-space separated text only.
     //          https://crates.io/crates/whiteread
     //          It features parse_line()? and parse_string("1 3 4")?
-    // 
+    //
 
     println!("Hello, world!");
 
@@ -129,7 +130,7 @@ fn main() -> Result<(), MainErrors> {
         scan!("{} {}", n, m);
         */
 
-        let (n, m) : (u16, u32) = parse_line()?;
+        let (n, m): (u16, u32) = parse_line()?;
         println!("Parsed m,n: {}, {}", m, n);
 
         // read all the jedi into a vec
@@ -145,8 +146,7 @@ fn main() -> Result<(), MainErrors> {
                 println!("Jedi {i}: ({a}, {b})", i=i, a=a, b=b);
             } else { return Err(MainErrors::StringSplitError(String::from("failed to parse")))}
             */
-            let (a, b) : (u32, u32) = parse_line()?;
-
+            let (a, b): (u32, u32) = parse_line()?;
         }
     }
 
