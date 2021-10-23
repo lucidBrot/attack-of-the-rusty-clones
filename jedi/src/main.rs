@@ -50,6 +50,8 @@ fn testcase(m: u32, n: u16, positions: &Vec<JediPos>) {
                                        // insists on being able to prove that they are initialized,
                                        // and it can't do that on an iterator. Because maybe, the
                                        // loop is never run (the iterator is empty)
+    assert!(positions.len() > 0, "Empty position vectors are not supported");
+    assert!((2*n as usize) == positions.len(), "n is inconsistent with positions");
     for (i, p) in positions.iter().enumerate() {
         current_num_active += match p {
             JediPos::Start(v) => 1,
