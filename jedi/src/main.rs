@@ -12,29 +12,10 @@ extern crate text_io;
 use whiteread::{parse_line, parse_string};
 
 /// a JediPos can either be a start or end position of a Jedi interval.
-trait JediPos {
-    fn is_start(&self) -> bool;
-    fn is_end(&self) -> bool {
-        !self.is_start()
-    }
-}
-
-struct JediStart {
-    pos: u32,
-}
-impl JediPos for JediStart {
-    fn is_start(&self) -> bool {
-        true
-    }
-}
-
-struct JediEnd {
-    pos: u32,
-}
-impl JediPos for JediEnd {
-    fn is_start(&self) -> bool {
-        true
-    }
+#[derive(Clone, Copy, Debug)]
+enum JediPos {
+    Start(u32),
+    End(u32),
 }
 
 #[derive(Debug, Error)]
@@ -51,10 +32,8 @@ enum MainErrors {
 /// m: number of segments, counting from 1
 /// n: number of jedi, counting from 1
 /// and a vec containing all jedi's start and end point
-fn testcase(m: u32, n: u16, workvec: Vec<Box<JediStart>>) {
+fn testcase(m: u32, n: u16, workvec: Vec<JediPos>) {
     // just for now
-    let js = JediStart { pos: 1 };
-    let je = JediEnd { pos: 2 };
 }
 
 /// Expects as input from stdin:
@@ -135,6 +114,7 @@ fn main() -> Result<(), MainErrors> {
 
         // read all the jedi into a vec
         // That vec shall contain all starts and seperately all ends
+        let mut positions: Vec<JediPos> = Vec::with_capacity((2 * n).into());
         for i in 0..n {
             // read line containing a and b
             /*
@@ -147,6 +127,8 @@ fn main() -> Result<(), MainErrors> {
             } else { return Err(MainErrors::StringSplitError(String::from("failed to parse")))}
             */
             let (a, b): (u32, u32) = parse_line()?;
+            positions.push(JediPos::Start(a));
+            positions.push(JediPos::End(b));
         }
     }
 
