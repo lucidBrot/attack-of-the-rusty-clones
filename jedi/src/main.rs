@@ -128,7 +128,7 @@ fn main() -> Result<(), MainErrors> {
             if let [a, b] = a_b_str.split_whitespace().map(|x| x.parse::<u32>())
                 .collect::<Result<Vec<u32>,_>>()?[..] {
                 println!("Jedi {i}: ({a}, {b})", i=i, a=a, b=b);
-            }
+            } else { return Err(MainErrors::StringSplitError(String::from("failed to parse")))}
 
         }
     }
