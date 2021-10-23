@@ -45,7 +45,7 @@ fn testcase(m: u32, n: u16, workvec: Vec<JediPos>) {
 /// 10^9, n <= 5*10^4)
 ///
 /// followed by n lines of two integers a and b
-// TODO: how to explicitly allow different kinds of errors? I want to say "this will either be a
+// how to explicitly allow different kinds of errors? I want to say "this will either be a
 // ParseIntError or whatever might happen in the try_from line...
 // Also, would a Box<dyn Error> actually be the way to go? Box is on the heap, right?
 // One Alternative seems to be using the thiserror crate: https://stackoverflow.com/a/58337971/2550406
@@ -70,46 +70,12 @@ fn main() -> Result<(), MainErrors> {
     //
 
     println!("Hello, world!");
-
-    // read from stdin
-    /*
-    let reader = io::stdin();
-    let mut input_text = String::new();
-    reader
-        .read_line(&mut input_text)
-        .expect("failed to read line");
-    let num_testcases = input_text.trim().parse::<u8>()?;
-    */
     let num_testcases: u8 = read!();
     println!("Parsed num_testcases {}", num_testcases);
 
     // for each testcase
 
     for _t in 0..num_testcases {
-        // split on space into two numbers
-        /*
-        let m: u32;
-        let n: u16;
-        let mut m_n_str = String::new();
-        reader.read_line(&mut m_n_str).expect("failed to read line");
-        let [m, n] = match <[&str; 2]>::try_from(
-            m_n_str.split_whitespace().take(2).collect::<Vec<&str>>(),
-        ) {
-            Ok(vals) => vals,
-            Err(e) => {
-                return Err(MainErrors::StringSplitError(format!("{:?}", e)));
-            }
-        };
-        let n = n.trim().parse::<u32>()?;
-        let m = m.trim().parse::<u16>()?;
-        */
-
-        /*
-        let m: u32;
-        let n: u16;
-        scan!("{} {}", n, m);
-        */
-
         let (n, m): (u16, u32) = parse_line()?;
         println!("Parsed m,n: {}, {}", m, n);
 
@@ -118,15 +84,6 @@ fn main() -> Result<(), MainErrors> {
         let mut positions: Vec<JediPos> = Vec::with_capacity((2 * n).into());
         for _i in 0..n {
             // read line containing a and b
-            /*
-            let mut a_b_str = String::new();
-            reader.read_line(&mut a_b_str).expect(&format!("failed to read line for {} jedi", i));
-            // apparently, using [..] after a vec is a trick to get the stuff out
-            if let [a, b] = a_b_str.split_whitespace().map(|x| x.parse::<u32>())
-                .collect::<Result<Vec<u32>,_>>()?[..] {
-                println!("Jedi {i}: ({a}, {b})", i=i, a=a, b=b);
-            } else { return Err(MainErrors::StringSplitError(String::from("failed to parse")))}
-            */
             let (a, b): (u32, u32) = parse_line()?;
             positions.push(JediPos::Start(a));
             positions.push(JediPos::End(b));
