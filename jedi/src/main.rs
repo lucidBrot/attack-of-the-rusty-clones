@@ -119,17 +119,17 @@ fn main() -> Result<(), MainErrors> {
                 return Err(MainErrors::StringSplitError(format!("{:?}", e)));
             }
         };
-        let m = m.trim().parse::<u16>()?;
         let n = n.trim().parse::<u32>()?;
+        let m = m.trim().parse::<u16>()?;
         */
 
         /*
         let m: u32;
         let n: u16;
-        scan!("{} {}", m, n);
+        scan!("{} {}", n, m);
         */
 
-        let (m, n) : (u32, u16) = parse_line()?;
+        let (n, m) : (u16, u32) = parse_line()?;
         println!("Parsed m,n: {}, {}", m, n);
 
         // read all the jedi into a vec
@@ -146,7 +146,6 @@ fn main() -> Result<(), MainErrors> {
             } else { return Err(MainErrors::StringSplitError(String::from("failed to parse")))}
             */
             let (a, b) : (u32, u32) = parse_line()?;
-            dbg!(a, b);
 
         }
     }
