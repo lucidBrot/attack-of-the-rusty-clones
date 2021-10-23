@@ -43,15 +43,21 @@ fn testcase(m: u32, n: u16, positions: &Vec<JediPos>) {
     // There are at most ( 5*10^4 * 2 ) entries in the vec => i32
     let mut current_num_active: i32 = 0;
     let mut smallest_num_active: i32 = 0;
-    let mut sna_index : usize = 0;
-    let mut sna_is_set : bool = false; // the existence of this bool allows us to ignore the 
-                                       // initial value of the smallest_num_active variable,
-                                       // same for sna_index. That's just useful because rust
-                                       // insists on being able to prove that they are initialized,
-                                       // and it can't do that on an iterator. Because maybe, the
-                                       // loop is never run (the iterator is empty)
-    assert!(positions.len() > 0, "Empty position vectors are not supported");
-    assert!((2*n as usize) == positions.len(), "n is inconsistent with positions");
+    let mut sna_index: usize = 0;
+    let mut sna_is_set: bool = false; // the existence of this bool allows us to ignore the
+                                      // initial value of the smallest_num_active variable,
+                                      // same for sna_index. That's just useful because rust
+                                      // insists on being able to prove that they are initialized,
+                                      // and it can't do that on an iterator. Because maybe, the
+                                      // loop is never run (the iterator is empty)
+    assert!(
+        positions.len() > 0,
+        "Empty position vectors are not supported"
+    );
+    assert!(
+        (2 * n as usize) == positions.len(),
+        "n is inconsistent with positions"
+    );
     for (i, p) in positions.iter().enumerate() {
         current_num_active += match p {
             JediPos::Start(v) => 1,
@@ -69,8 +75,10 @@ fn testcase(m: u32, n: u16, positions: &Vec<JediPos>) {
         // was at a place where 100 jedi overlap, so the best place would be at a negative number
         // and the value zero does not mean anything in absolute terms.
     }
-    println!("Smallest number of Active Jedi is at index {} where the value is {}", sna_index, smallest_num_active);
-
+    println!(
+        "Smallest number of Active Jedi is at index {} where the value is {}",
+        sna_index, smallest_num_active
+    );
 }
 
 /// Expects as input from stdin:
