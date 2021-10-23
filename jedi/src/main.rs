@@ -55,8 +55,10 @@ fn testcase(m: u32, n: u16, workvec: Vec<Box<JediStart>>) {
 /// Expects as input from stdin:
 ///
 /// one single integer followed by a newline, denoting the number of testcases (t <= 35)
+///
 /// one line with two integers n and m, separated by a space, denoting the number of jedi. (m <=
 /// 10^9, n <= 5*10^4)
+///
 /// followed by n lines of two integers a and b
 // TODO: how to explicitly allow different kinds of errors? I want to say "this will either be a
 // ParseIntError or whatever might happen in the try_from line...
@@ -91,7 +93,20 @@ fn main() -> Result<(), MainErrors> {
                 return Err(MainErrors::StringSplitError(format!("{:?}", e)));
             }
         };
+        let m = m.trim().parse::<u16>()?;
+        let n = n.trim().parse::<u32>()?;
         println!("Parsed m,n: {}, {}", m, n);
+
+        // read all the jedi into a vec
+        // That vec shall contain all starts and seperately all ends
+        for i in 0..n {
+            // read line containing a and b
+            let mut a_b_str = String::new();
+            reader.read_line(&mut a_b_str).expect(&format!("failed to read line for {} jedi", i));
+            let a_b: Vec<u32> = a_b_str.split_whitespace().map(|x| x.parse::<u32>())
+                .collect::<Result<Vec<u32>,_>>()?;
+
+        }
     }
 
     Ok(())
