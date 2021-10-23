@@ -9,7 +9,7 @@
 use thiserror::Error;
 #[macro_use]
 extern crate text_io;
-use whiteread::{parse_line};
+use whiteread::parse_line;
 
 /// a JediPos can either be a start or end position of a Jedi interval.
 #[derive(Clone, Copy, Debug)]
@@ -22,9 +22,9 @@ enum JediPos {
 enum MainErrors {
     #[error(transparent)]
     ParseIntError(#[from] std::num::ParseIntError),
-/*    #[error("Failed to split string into exactly two words: `{0}`")]
-    StringSplitError(String),
-*/
+    /*    #[error("Failed to split string into exactly two words: `{0}`")]
+        StringSplitError(String),
+    */
     #[error(transparent)]
     WhitereadParseError(#[from] whiteread::reader::Error),
 }
@@ -134,9 +134,23 @@ fn main() -> Result<(), MainErrors> {
 
         // sort that vec ascending
         positions.sort_by(|x, y| {
-            let a = match x { JediPos::Start(v) => v, JediPos::End(v) => v };
-            let b = match y { JediPos::Start(v) => v, JediPos::End(v) => v };
-            return if a < b {std::cmp::Ordering::Less} else { if a == b {std::cmp::Ordering::Equal} else {std::cmp::Ordering::Greater}};
+            let a = match x {
+                JediPos::Start(v) => v,
+                JediPos::End(v) => v,
+            };
+            let b = match y {
+                JediPos::Start(v) => v,
+                JediPos::End(v) => v,
+            };
+            return if a < b {
+                std::cmp::Ordering::Less
+            } else {
+                if a == b {
+                    std::cmp::Ordering::Equal
+                } else {
+                    std::cmp::Ordering::Greater
+                }
+            };
         });
         dbg!(positions);
     }
