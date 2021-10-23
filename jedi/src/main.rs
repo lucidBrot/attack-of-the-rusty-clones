@@ -3,13 +3,13 @@
 //!
 //! we have `m` segments, with 1 <= m <= 10^9
 
-use anyhow;
-use std::convert::TryFrom;
-use std::io;
+//use anyhow;
+//use std::convert::TryFrom;
+//use std::io;
 use thiserror::Error;
 #[macro_use]
 extern crate text_io;
-use whiteread::{parse_line, parse_string};
+use whiteread::{parse_line};
 
 /// a JediPos can either be a start or end position of a Jedi interval.
 #[derive(Clone, Copy, Debug)]
@@ -22,8 +22,9 @@ enum JediPos {
 enum MainErrors {
     #[error(transparent)]
     ParseIntError(#[from] std::num::ParseIntError),
-    #[error("Failed to split string into exactly two words: `{0}`")]
+/*    #[error("Failed to split string into exactly two words: `{0}`")]
     StringSplitError(String),
+*/
     #[error(transparent)]
     WhitereadParseError(#[from] whiteread::reader::Error),
 }
@@ -71,8 +72,8 @@ fn main() -> Result<(), MainErrors> {
     println!("Hello, world!");
 
     // read from stdin
-    let reader = io::stdin();
     /*
+    let reader = io::stdin();
     let mut input_text = String::new();
     reader
         .read_line(&mut input_text)
@@ -84,7 +85,7 @@ fn main() -> Result<(), MainErrors> {
 
     // for each testcase
 
-    for t in 0..num_testcases {
+    for _t in 0..num_testcases {
         // split on space into two numbers
         /*
         let m: u32;
@@ -115,7 +116,7 @@ fn main() -> Result<(), MainErrors> {
         // read all the jedi into a vec
         // That vec shall contain all starts and seperately all ends
         let mut positions: Vec<JediPos> = Vec::with_capacity((2 * n).into());
-        for i in 0..n {
+        for _i in 0..n {
             // read line containing a and b
             /*
             let mut a_b_str = String::new();
