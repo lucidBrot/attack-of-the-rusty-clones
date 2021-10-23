@@ -131,6 +131,14 @@ fn main() -> Result<(), MainErrors> {
             positions.push(JediPos::Start(a));
             positions.push(JediPos::End(b));
         }
+
+        // sort that vec ascending
+        positions.sort_by(|x, y| {
+            let a = match x { JediPos::Start(v) => v, JediPos::End(v) => v };
+            let b = match y { JediPos::Start(v) => v, JediPos::End(v) => v };
+            return if a < b {std::cmp::Ordering::Less} else { if a == b {std::cmp::Ordering::Equal} else {std::cmp::Ordering::Greater}};
+        });
+        dbg!(positions);
     }
 
     Ok(())
