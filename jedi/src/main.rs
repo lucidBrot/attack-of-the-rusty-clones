@@ -12,7 +12,7 @@ extern crate text_io;
 use whiteread::parse_line;
 
 /// a JediPos can either be a start or end position of a Jedi interval.
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialOrd, Ord, PartialEq, Eq)]
 enum JediPos {
     Start(u32),
     End(u32),
@@ -133,25 +133,7 @@ fn main() -> Result<(), MainErrors> {
         }
 
         // sort that vec ascending
-        positions.sort_by(|x, y| {
-            let a = match x {
-                JediPos::Start(v) => v,
-                JediPos::End(v) => v,
-            };
-            let b = match y {
-                JediPos::Start(v) => v,
-                JediPos::End(v) => v,
-            };
-            return if a < b {
-                std::cmp::Ordering::Less
-            } else {
-                if a == b {
-                    std::cmp::Ordering::Equal
-                } else {
-                    std::cmp::Ordering::Greater
-                }
-            };
-        });
+        positions.sort();
         dbg!(positions);
     }
 
