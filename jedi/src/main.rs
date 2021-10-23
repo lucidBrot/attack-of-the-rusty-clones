@@ -8,6 +8,7 @@ use std::convert::TryFrom;
 use std::io;
 use thiserror::Error;
 #[macro_use] extern crate text_io;
+use whiteread::{parse_line, parse_string};
 
 /// a JediPos can either be a start or end position of a Jedi interval.
 trait JediPos {
@@ -41,6 +42,8 @@ enum MainErrors {
     ParseIntError(#[from] std::num::ParseIntError),
     #[error("Failed to split string into exactly two words: `{0}`")]
     StringSplitError(String),
+    #[error(transparent)]
+    WhitereadParseError(#[from] whiteread::reader::Error),
 }
 
 /// Runs one testcase
@@ -79,6 +82,10 @@ fn main() -> Result<(), MainErrors> {
     //          https://stackoverflow.com/a/33631589/2550406
     // Way5: if let [Ok(m), Ok(n)] = & split map collect
     //          https://stackoverflow.com/a/33631317/2550406
+    // Way6: Using whiteread, a crate with a function-based interface specifically for
+    //          white-space separated text only.
+    //          https://crates.io/crates/whiteread
+    //          It features parse_line()? and parse_string("1 3 4")?
     // 
 
     println!("Hello, world!");
@@ -98,12 +105,12 @@ fn main() -> Result<(), MainErrors> {
     // for each testcase
 
     for t in 0..num_testcases {
+        // split on space into two numbers
+        /*
         let m: u32;
         let n: u16;
         let mut m_n_str = String::new();
         reader.read_line(&mut m_n_str).expect("failed to read line");
-        /*
-        // split on space into two numbers
         let [m, n] = match <[&str; 2]>::try_from(
             m_n_str.split_whitespace().take(2).collect::<Vec<&str>>(),
         ) {
@@ -115,13 +122,21 @@ fn main() -> Result<(), MainErrors> {
         let m = m.trim().parse::<u16>()?;
         let n = n.trim().parse::<u32>()?;
         */
+
+        /*
+        let m: u32;
+        let n: u16;
         scan!("{} {}", m, n);
+        */
+
+        let (m, n) : (u32, u16) = parse_line()?;
         println!("Parsed m,n: {}, {}", m, n);
 
         // read all the jedi into a vec
         // That vec shall contain all starts and seperately all ends
         for i in 0..n {
             // read line containing a and b
+            /*
             let mut a_b_str = String::new();
             reader.read_line(&mut a_b_str).expect(&format!("failed to read line for {} jedi", i));
             // apparently, using [..] after a vec is a trick to get the stuff out
@@ -129,6 +144,9 @@ fn main() -> Result<(), MainErrors> {
                 .collect::<Result<Vec<u32>,_>>()?[..] {
                 println!("Jedi {i}: ({a}, {b})", i=i, a=a, b=b);
             } else { return Err(MainErrors::StringSplitError(String::from("failed to parse")))}
+            */
+            let (a, b) : (u32, u32) = parse_line()?;
+            dbg!(a, b);
 
         }
     }
