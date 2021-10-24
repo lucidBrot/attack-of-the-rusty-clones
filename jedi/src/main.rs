@@ -26,7 +26,11 @@ enum JediPos {
 /// then by jedi number
 impl PartialOrd for JediPos {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some((self.segment(), !self.is_start(), self.jedi_id()).cmp(&(other.segment(), !other.is_start(), other.jedi_id())))
+        Some((self.segment(), !self.is_start(), self.jedi_id()).cmp(&(
+            other.segment(),
+            !other.is_start(),
+            other.jedi_id(),
+        )))
     }
 }
 
@@ -142,7 +146,7 @@ fn testcase(m: u32, n: u16, positions: &Vec<JediPos>) {
 }
 
 /// given a starting_jedi_nr, we will stop looping when that Start(nr) is encountered
-/// TODO: make sure it comes before any End() of other jedi. We wouldn't want them to be picked
+/// ~~~ make sure it comes before any End() of other jedi. We wouldn't want them to be picked
 /// there. So any end containing the value of the start segment shall be ignored.
 /// To loop correctly, we need to know the index of the startin_jedi's End as well.
 /// But this is annoying to code, so instead I simply take the sna_index and search from there.
@@ -166,6 +170,7 @@ fn count_edf(positions: &Vec<JediPos>, starting_jedi: JediPos, sna_index: usize)
 
     // The stop condition is when the encountered entry is a `JediPos::End(v, jedi_id)`
     //      where `jedi_id` == `starting_jedi_id`
+    //      TODO: continue coding here.
     return 3;
 }
 
