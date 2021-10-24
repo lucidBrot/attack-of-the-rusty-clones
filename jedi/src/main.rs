@@ -14,26 +14,19 @@ use whiteread::parse_line;
 
 /// a JediPos can either be a start or end position of a Jedi interval.
 /// It contains the segment id where it is located.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Ord)]
 enum JediPos {
     // order matters here!
     Start(u32, u16),
     End(u32, u16),
 }
 
-impl Ord for JediPos {
-    /// sort first by segment number,
-    /// then by Start < End
-    /// then by jedi number
-    fn cmp(&self, other: &Self) -> Ordering {
-        (self.segment(), !self.is_start(), self.jedi_id()).cmp(&(other.segment(), !other.is_start(), other.jedi_id()))
-    }
-}
-// TODO: also implement PartialOrd to make sure it works the same way.
-
+/// sort first by segment number,
+/// then by Start < End
+/// then by jedi number
 impl PartialOrd for JediPos {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.cmp(other))
+        Some((self.segment(), !self.is_start(), self.jedi_id()).cmp(&(other.segment(), !other.is_start(), other.jedi_id())))
     }
 }
 
