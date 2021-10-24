@@ -60,8 +60,8 @@ fn testcase(m: u32, n: u16, positions: &Vec<JediPos>) {
     );
     for (i, p) in positions.iter().enumerate() {
         current_num_active += match p {
-            JediPos::Start(v) => 1,
-            JediPos::End(v) => -1,
+            JediPos::Start(_v) => 1,
+            JediPos::End(_v) => -1,
         };
 
         if !sna_is_set || (current_num_active < smallest_num_active) {
@@ -79,6 +79,17 @@ fn testcase(m: u32, n: u16, positions: &Vec<JediPos>) {
         "Smallest number of Active Jedi is at index {} where the value is {}",
         sna_index, smallest_num_active
     );
+
+    // Figure out the correct of the starting jedi by trying all options to start with.
+    // That should be feasible, since the absolute value of active jedi here is <= 10
+    // The start jedi is either one of the jedi overlapping the sna_index segment,
+    // or the first jedi to end afterwards.
+    // The simplest way to do this is to just try the next 11 jedi that end. This way,
+    // there is no need for keeping track of which jedi start positions have been encountered.
+    let starting_jedi : Vec<&JediPos> = positions.iter().cycle().skip(sna_index).filter(|el| match el {
+        JediPos::Start(_) => false,
+        JediPos::End(_) => true,
+    }).take(11).collect();
 }
 
 /// Expects as input from stdin:
