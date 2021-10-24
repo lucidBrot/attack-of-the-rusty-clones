@@ -9,8 +9,8 @@
 use thiserror::Error;
 #[macro_use]
 extern crate text_io;
-use whiteread::parse_line;
 use std::cmp::Ordering;
+use whiteread::parse_line;
 
 /// a JediPos can either be a start or end position of a Jedi interval.
 /// It contains the segment id where it is located.
@@ -22,51 +22,38 @@ enum JediPos {
 }
 
 impl Ord for JediPos {
+    /// sort first by segment number,
+    /// then by Start < End
+    /// then by jedi number
     fn cmp(&self, other: &Self) -> Ordering {
-        match (self.segment(), self.jedi_id()).cmp(&(other.segment(), other.jedi_id())) {
-            Ordering::Less => Ordering::Less,
-            Ordering::Greater => Ordering::Greater,
-            Ordering::Equal => {
-                if (self.is_start() == other.is_start()) {return Ordering::Equal;}
-                else if (self.is_start()) {return Ordering::Less; }
-                else {return Ordering::Greater;}
-            },
-        }
+        (self.segment(), !self.is_start(), self.jedi_id()).cmp(&(other.segment(), !other.is_start(), other.jedi_id()))
     }
 }
 // TODO: also implement PartialOrd to make sure it works the same way.
 
 impl PartialOrd for JediPos {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(match (self.segment(), self.jedi_id()).cmp(&(other.segment(), other.jedi_id())) {
-            Ordering::Less => Ordering::Less,
-            Ordering::Greater => Ordering::Greater,
-            Ordering::Equal => {
-                if (self.is_start() == other.is_start()) { Ordering::Equal}
-                else if (self.is_start()) { Ordering::Less }
-                else { Ordering::Greater}
-            },
-        })
+        Some(self.cmp(other))
     }
 }
 
 impl JediPos {
     fn segment(self) -> u32 {
         match self {
-            JediPos::Start(v,_) => v,
-            JediPos::End(v,_) => v,
+            JediPos::Start(v, _) => v,
+            JediPos::End(v, _) => v,
         }
     }
     fn jedi_id(self) -> u16 {
         match self {
-            JediPos::Start(_,j) => j,
-            JediPos::End(_,j) => j,
+            JediPos::Start(_, j) => j,
+            JediPos::End(_, j) => j,
         }
     }
     fn is_start(self) -> bool {
         match self {
-            JediPos::Start(_,_) => true,
-            JediPos::End(_,_) => false,
+            JediPos::Start(_, _) => true,
+            JediPos::End(_, _) => false,
         }
     }
 }
@@ -144,8 +131,8 @@ fn testcase(m: u32, n: u16, positions: &Vec<JediPos>) {
         .cycle()
         .skip(sna_index)
         .filter(|el| match el {
-            JediPos::Start(_,_) => false,
-            JediPos::End(_,_) => true,
+            JediPos::Start(_, _) => false,
+            JediPos::End(_, _) => true,
         })
         .take(11)
         .collect();
@@ -153,7 +140,11 @@ fn testcase(m: u32, n: u16, positions: &Vec<JediPos>) {
     // But whatever, that should not be too relevant.
 
     // For each starting jedi, we do the same task
-    let max_jedi_in_fight : u16 = starting_jedi.iter().map(|el| count_edf(&positions, **el, sna_index)).max().expect("there must be at least one jedi in total.");
+    let max_jedi_in_fight: u16 = starting_jedi
+        .iter()
+        .map(|el| count_edf(&positions, **el, sna_index))
+        .max()
+        .expect("there must be at least one jedi in total.");
     println!("{}", max_jedi_in_fight);
 }
 
@@ -163,25 +154,26 @@ fn testcase(m: u32, n: u16, positions: &Vec<JediPos>) {
 /// To loop correctly, we need to know the index of the startin_jedi's End as well.
 /// But this is annoying to code, so instead I simply take the sna_index and search from there.
 fn count_edf(positions: &Vec<JediPos>, starting_jedi: JediPos, sna_index: usize) -> u16 {
-    matches!(starting_jedi, JediPos::End(_, _) );
+    matches!(starting_jedi, JediPos::End(_, _));
     let starting_jedi_id = starting_jedi.jedi_id();
-    let myiter = positions.iter().cycle().skip(sna_index).skip_while(|el| {
-        match el {
-            JediPos::Start(_,_) => true,
+    let myiter = positions
+        .iter()
+        .cycle()
+        .skip(sna_index)
+        .skip_while(|el| match el {
+            JediPos::Start(_, _) => true,
             JediPos::End(v, jedi_id) => *jedi_id != starting_jedi_id,
-        }
-    });
+        });
     // the first element in myiter is End(starting_jedi_nr)
     // from then on, it will simply loop around. It is my own job to stop at
     // Start(starting_jedi_nr). As well as ignoring any End(starting_jedi_start_segment)
     // Ignoring those is relevant because we can't end one jedi on the same space as our initial
     // jedi starts. Luckily, there are no additional checks required due to the vec being ordered
     // such that Start is less than End with the same values.
-    
-    
+
     // The stop condition is when the encountered entry is a `JediPos::End(v, jedi_id)`
     //      where `jedi_id` == `starting_jedi_id`
-    return 3
+    return 3;
 }
 
 /// Expects as input from stdin:
@@ -215,11 +207,24 @@ fn main() -> Result<(), MainErrors> {
     //          https://crates.io/crates/whiteread
     //          It features parse_line()? and parse_string("1 3 4")?
     //
-    
+
     // testing enum order:
-    let mut dbg_vec2 = vec![JediPos::End(1, 1), JediPos::Start(1,1), JediPos::Start(2,1), JediPos::Start(1,2)];
+    let mut dbg_vec2 = vec![
+        JediPos::End(1, 1),
+        JediPos::Start(1, 1),
+        JediPos::Start(2, 1),
+        JediPos::Start(1, 2),
+    ];
     dbg_vec2.sort();
-    assert_eq!(dbg_vec2, vec![JediPos::Start(1,1), JediPos::Start(1,2), JediPos::End(1,1), JediPos::Start(2,1)]);
+    assert_eq!(
+        dbg_vec2,
+        vec![
+            JediPos::Start(1, 1),
+            JediPos::Start(1, 2),
+            JediPos::End(1, 1),
+            JediPos::Start(2, 1)
+        ]
+    );
 
     println!("Hello, world!");
     let num_testcases: u8 = read!();
