@@ -10,16 +10,44 @@ use thiserror::Error;
 #[macro_use]
 extern crate text_io;
 use whiteread::parse_line;
+use std::cmp::Ordering;
 
 /// a JediPos can either be a start or end position of a Jedi interval.
 /// It contains the segment id where it is located.
-#[derive(Clone, Copy, Debug, PartialOrd, Ord, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum JediPos {
     // order matters here!
-    // "When derived on enums, variants are ordered by their top-to-bottom discriminant order.
-    // This means variants at the top are less than variants at the bottom."
     Start(u32, u16),
     End(u32, u16),
+}
+
+impl Ord for JediPos {
+    fn cmp(&self, other: &Self) -> Ordering {
+        match (self.segment(), self.jedi_id()).cmp(&(other.segment(), other.jedi_id())) {
+            Ordering::Less => Ordering::Less,
+            Ordering::Greater => Ordering::Greater,
+            Ordering::Equal => {
+                if (self.is_start() == other.is_start()) {return Ordering::Equal;}
+                else if (self.is_start()) {return Ordering::Less; }
+                else {return Ordering::Greater;}
+            },
+        }
+    }
+}
+// TODO: also implement PartialOrd to make sure it works the same way.
+
+impl PartialOrd for JediPos {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(match (self.segment(), self.jedi_id()).cmp(&(other.segment(), other.jedi_id())) {
+            Ordering::Less => Ordering::Less,
+            Ordering::Greater => Ordering::Greater,
+            Ordering::Equal => {
+                if (self.is_start() == other.is_start()) { Ordering::Equal}
+                else if (self.is_start()) { Ordering::Less }
+                else { Ordering::Greater}
+            },
+        })
+    }
 }
 
 impl JediPos {
@@ -33,6 +61,12 @@ impl JediPos {
         match self {
             JediPos::Start(_,j) => j,
             JediPos::End(_,j) => j,
+        }
+    }
+    fn is_start(self) -> bool {
+        match self {
+            JediPos::Start(_,_) => true,
+            JediPos::End(_,_) => false,
         }
     }
 }
