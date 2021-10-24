@@ -18,6 +18,15 @@ enum JediPos {
     End(u32),
 }
 
+impl JediPos {
+    fn val(self) -> u32 {
+        match self {
+            JediPos::Start(v) => v,
+            JediPos::End(v) => v,
+        }
+    }
+}
+
 #[derive(Debug, Error)]
 enum MainErrors {
     #[error(transparent)]
@@ -86,10 +95,30 @@ fn testcase(m: u32, n: u16, positions: &Vec<JediPos>) {
     // or the first jedi to end afterwards.
     // The simplest way to do this is to just try the next 11 jedi that end. This way,
     // there is no need for keeping track of which jedi start positions have been encountered.
-    let starting_jedi : Vec<&JediPos> = positions.iter().cycle().skip(sna_index).filter(|el| match el {
-        JediPos::Start(_) => false,
-        JediPos::End(_) => true,
-    }).take(11).collect();
+    let starting_jedi: Vec<&JediPos> = positions
+        .iter()
+        .cycle()
+        .skip(sna_index)
+        .filter(|el| match el {
+            JediPos::Start(_) => false,
+            JediPos::End(_) => true,
+        })
+        .take(11)
+        .collect();
+    // This could be optimized a little, because not always will there be ten active jedi.
+    // But whatever, that should not be too relevant.
+
+    // For each starting jedi, we do the same task
+    let max_jedi_in_fight : u16 = starting_jedi.iter().map(|el| count_edf(&positions, el.val(), sna_index)).max().expect("there must be at least one jedi in total.");
+}
+
+/// given a starting_jedi_nr, we will stop looping when that Start(nr) is encountered
+/// TODO: make sure it comes before any End() of other jedi. We wouldn't want them to be picked
+/// there.
+/// To loop correctly, we need to know the index of the startin_jedi's End as well.
+/// But this is annoying to code, so instead I simply take the sna_index and search from there.
+fn count_edf(positions: &Vec<JediPos>, starting_jedi_nr: u32, sna_index: usize) -> u16 {
+    return 3
 }
 
 /// Expects as input from stdin:
