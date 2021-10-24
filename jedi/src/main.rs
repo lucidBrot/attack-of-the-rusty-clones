@@ -12,17 +12,24 @@ extern crate text_io;
 use whiteread::parse_line;
 
 /// a JediPos can either be a start or end position of a Jedi interval.
+/// It contains the segment id where it is located.
 #[derive(Clone, Copy, Debug, PartialOrd, Ord, PartialEq, Eq)]
 enum JediPos {
-    Start(u32),
-    End(u32),
+    Start(u32, u16),
+    End(u32, u16),
 }
 
 impl JediPos {
-    fn val(self) -> u32 {
+    fn segment(self) -> u32 {
         match self {
-            JediPos::Start(v) => v,
-            JediPos::End(v) => v,
+            JediPos::Start(v,_) => v,
+            JediPos::End(v,_) => v,
+        }
+    }
+    fn jedi_id(self) -> u16 {
+        match self {
+            JediPos::Start(_,j) => j,
+            JediPos::End(_,j) => j,
         }
     }
 }
@@ -110,14 +117,27 @@ fn testcase(m: u32, n: u16, positions: &Vec<JediPos>) {
 
     // For each starting jedi, we do the same task
     let max_jedi_in_fight : u16 = starting_jedi.iter().map(|el| count_edf(&positions, el.val(), sna_index)).max().expect("there must be at least one jedi in total.");
+    println!("{}", max_jedi_in_fight);
 }
 
 /// given a starting_jedi_nr, we will stop looping when that Start(nr) is encountered
 /// TODO: make sure it comes before any End() of other jedi. We wouldn't want them to be picked
-/// there.
+/// there. So any end containing the value of the start segment shall be ignored.
 /// To loop correctly, we need to know the index of the startin_jedi's End as well.
 /// But this is annoying to code, so instead I simply take the sna_index and search from there.
 fn count_edf(positions: &Vec<JediPos>, starting_jedi_nr: u32, sna_index: usize) -> u16 {
+    let myiter = positions.iter().cycle().skip(sna_index).skip_while(|el| {
+        match el {
+            JediPos::Start(_) => true,
+            JediPos::End(v, jedi_id) => jedi_id != starting_jedi_nr,
+        }
+    });
+    // the first element in myiter is End(starting_jedi_nr)
+    // from then on, it will simply loop around. It is my own job to stop at
+    // Start(starting_jedi_nr). As well as ignoring any End(starting_jedi_start_segment)
+    // TODO: store jedi id in the JediPos enums, so that I know when to stop.
+    // TODO: make sure the vector is sorted such that for each segment s, Start(s) come before
+    // End(s).
     return 3
 }
 
@@ -166,11 +186,11 @@ fn main() -> Result<(), MainErrors> {
         // read all the jedi into a vec
         // That vec shall contain all starts and seperately all ends
         let mut positions: Vec<JediPos> = Vec::with_capacity((2 * n).into());
-        for _i in 0..n {
+        for jedi_id in 0..n {
             // read line containing a and b
             let (a, b): (u32, u32) = parse_line()?;
-            positions.push(JediPos::Start(a));
-            positions.push(JediPos::End(b));
+            positions.push(JediPos::Start(a, jedi_id));
+            positions.push(JediPos::End(b, jedi_id));
         }
 
         // sort that vec ascending
