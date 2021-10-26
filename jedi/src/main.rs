@@ -165,6 +165,7 @@ fn count_edf(positions: &Vec<JediPos>, starting_jedi: JediPos, sna_index: usize)
         });
     // my test shows that the failing entry is not skipped, as expected.
     println!("Skipped ahead {} steps, and then to the end of the starting jedi", sna_index);
+    dbg!(starting_jedi);
 
     // the first element in myiter is End(starting_jedi_nr)
     // from then on, it will simply loop around. It is my own job to stop at
@@ -283,8 +284,9 @@ mod tests{
         loop {
             let a = *(testjedidata.next().unwrap());
             let b = *testjedidata.next().expect("should exist");
-            positions.push(JediPos::Start(a, {jedi_id+=1; jedi_id}));
-            positions.push(JediPos::End(b, {jedi_id+=1; jedi_id}));
+            jedi_id += 1;
+            positions.push(JediPos::Start(a, jedi_id));
+            positions.push(JediPos::End(b, jedi_id));
             if let None = testjedidata.peek() { break; }
             else { println!("Another round!"); }
         }
