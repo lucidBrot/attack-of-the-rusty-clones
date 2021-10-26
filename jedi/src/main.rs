@@ -70,7 +70,7 @@ enum MainErrors {
 /// m: number of segments, counting from 1
 /// n: number of jedi, counting from 1
 /// and a vec containing all jedi's start and end point
-fn testcase(m: u32, n: u16, positions: &Vec<JediPos>) -> u16 {
+fn testcase(_m: u32, n: u16, positions: &Vec<JediPos>) -> u16 {
     // find best starting point by enumerating number of active jedi at each relevant segment.
     // A "relevant segment" is one that a jedi starts or ends at, so the segments in `positions`.
 
@@ -154,13 +154,14 @@ fn testcase(m: u32, n: u16, positions: &Vec<JediPos>) -> u16 {
 fn count_edf(positions: &Vec<JediPos>, starting_jedi: JediPos, sna_index: usize) -> u16 {
     matches!(starting_jedi, JediPos::End(_, _));
     let starting_jedi_id = starting_jedi.jedi_id();
+    // skip ahead to the start
     let myiter = positions
         .iter()
         .cycle()
         .skip(sna_index)
         .skip_while(|el| match el {
             JediPos::Start(_, _) => true,
-            JediPos::End(v, jedi_id) => *jedi_id != starting_jedi_id,
+            JediPos::End(_v, jedi_id) => *jedi_id != starting_jedi_id,
         });
     // the first element in myiter is End(starting_jedi_nr)
     // from then on, it will simply loop around. It is my own job to stop at
@@ -171,8 +172,19 @@ fn count_edf(positions: &Vec<JediPos>, starting_jedi: JediPos, sna_index: usize)
 
     // The stop condition is when the encountered entry is a `JediPos::End(v, jedi_id)`
     //      where `jedi_id` == `starting_jedi_id`
-    //      TODO: continue coding here.
-    return 3;
+    let limited_iter = myiter.take_while(|el| match el {
+        JediPos::End(_, _) => true,
+        JediPos::Start(_v, jedi_id) => *jedi_id != starting_jedi_id,
+        // the first entry encountered that breaks the chain is still included if I
+        // read the docs correctly, but not according to 
+        // https://github.com/rust-lang/rust/issues/62208
+        // My test shows that it is not included anymore.
+    });
+
+    // sum up all ends we can.
+    let result: usize = limited_iter.filter(|el| matches!(el, JediPos::End(_,_))).count();
+
+    return result as u16;
 }
 
 /// Expects as input from stdin:
@@ -270,6 +282,7 @@ mod tests{
             positions.push(JediPos::Start(a, {jedi_id+=1; jedi_id}));
             positions.push(JediPos::End(b, {jedi_id+=1; jedi_id}));
             if let None = testjedidata.peek() { break; }
+            else { println!("Another round!"); }
         }
 
         let result = testcase(m, n, &positions);
@@ -281,4 +294,28 @@ mod tests{
     fn eric_hole(){
         vericfy(2, 6, vec![1,1, 4,5], 2);
     }
+
+    //TODO: write a script that generates test code for all my test files
+
+    /// tests behaviour of take_while
+    /// view the output with `cargo test test_take_while -- --nocapture`
+    #[test]
+    fn test_take_while(){
+        let v: Vec<u32> = vec![1,2,3,4,5,6,7,8];
+        // this could (should) be a for loop, but I wanted to see if this works too
+        let r = v.iter().take_while(|&&el| el<7).map(|&el| {print!("{}, ", el); el}).collect::<Vec<u32>>();
+        assert_eq!(r, vec![1,2,3,4,5,6]);
+    }
+
+    /*
+    /// tests behaviour of deconstructing with `if let`  in a filter
+    /// I disabled it though, because this is currently experimental.
+    /// Alternative is to use match! (expr, pattern)
+    /// #[test]
+    fn test_filtering(){
+        let v: Vec<JediPos> = vec![JediPos::Start(1,2), JediPos::End(3,4)];
+        let r: Vec<JediPos> = v.filter(|el| let JediPos::Start(_,_) = el).collect();
+        assert_eq!(r, vec![JediPos::Start(1,2)]);
+    }
+    */
 }
