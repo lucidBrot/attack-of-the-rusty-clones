@@ -70,7 +70,7 @@ enum MainErrors {
 /// m: number of segments, counting from 1
 /// n: number of jedi, counting from 1
 /// and a vec containing all jedi's start and end point
-fn testcase(m: u32, n: u16, positions: &Vec<JediPos>) {
+fn testcase(m: u32, n: u16, positions: &Vec<JediPos>) -> u16 {
     // find best starting point by enumerating number of active jedi at each relevant segment.
     // A "relevant segment" is one that a jedi starts or ends at, so the segments in `positions`.
 
@@ -143,6 +143,7 @@ fn testcase(m: u32, n: u16, positions: &Vec<JediPos>) {
         .max()
         .expect("there must be at least one jedi in total.");
     println!("{}", max_jedi_in_fight);
+    return max_jedi_in_fight;
 }
 
 /// given a starting_jedi_nr, we will stop looping when that Start(nr) is encountered
@@ -252,4 +253,31 @@ fn main() -> Result<(), MainErrors> {
     }
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests{
+    // import names from outer scope
+    use super::*;
+
+    /// reproduces what the eric_hole.in file tests
+    #[test]
+    fn eric_hole (){
+        let (n, m) : (u16, u32) = (2, 6); 
+        let testjedivec = vec![ 1,1, 4,5, ];
+        let mut testjedidata = testjedivec.iter().peekable();
+        let mut positions: Vec<JediPos> = Vec::with_capacity((2 * n).into());
+        let mut jedi_id = 0;
+        loop {
+            let a = *(testjedidata.next().unwrap());
+            let b = *testjedidata.next().expect("should exist");
+            positions.push(JediPos::Start(a, {jedi_id+=1; jedi_id}));
+            positions.push(JediPos::End(b, {jedi_id+=1; jedi_id}));
+            if let None = testjedidata.peek() { break; }
+        }
+
+        let result = testcase(m, n, &positions);
+        assert_eq!(result, 2, "Result was {} instead of 2", result);
+
+    }
 }
