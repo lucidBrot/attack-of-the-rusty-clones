@@ -152,7 +152,7 @@ fn testcase(_m: u32, n: u16, positions: &Vec<JediPos>) -> u16 {
 /// To loop correctly, we need to know the index of the startin_jedi's End as well.
 /// But this is annoying to code, so instead I simply take the sna_index and search from there.
 fn count_edf(positions: &Vec<JediPos>, starting_jedi: JediPos, sna_index: usize) -> u16 {
-    matches!(starting_jedi, JediPos::End(_, _));
+    assert!(matches!(starting_jedi, JediPos::End(_, _)));
     let starting_jedi_id = starting_jedi.jedi_id();
     // skip ahead to the start
     let myiter = positions
@@ -163,6 +163,9 @@ fn count_edf(positions: &Vec<JediPos>, starting_jedi: JediPos, sna_index: usize)
             JediPos::Start(_, _) => true,
             JediPos::End(_v, jedi_id) => *jedi_id != starting_jedi_id,
         });
+    // my test shows that the failing entry is not skipped, as expected.
+    println!("Skipped ahead {} steps, and then to the end of the starting jedi", sna_index);
+
     // the first element in myiter is End(starting_jedi_nr)
     // from then on, it will simply loop around. It is my own job to stop at
     // Start(starting_jedi_nr). As well as ignoring any End(starting_jedi_start_segment)
@@ -170,6 +173,7 @@ fn count_edf(positions: &Vec<JediPos>, starting_jedi: JediPos, sna_index: usize)
     // jedi starts. Luckily, there are no additional checks required due to the vec being ordered
     // such that Start is less than End with the same values.
 
+    dbg![myiter.clone().take(10).collect::<Vec<&JediPos>>()];
     // The stop condition is when the encountered entry is a `JediPos::End(v, jedi_id)`
     //      where `jedi_id` == `starting_jedi_id`
     let limited_iter = myiter.take_while(|el| match el {
@@ -307,6 +311,14 @@ mod tests{
         assert_eq!(r, vec![1,2,3,4,5,6]);
     }
 
+    #[test]
+    fn test_skip_while(){
+        let v: Vec<u32> = vec![1,2,3,4,5,6,7,8];
+        // this could (should) be a for loop, but I wanted to see if this works too
+        let r = v.iter().skip_while(|&&el| el<7).map(|&el| {print!("{}, ", el); el}).collect::<Vec<u32>>();
+        assert_eq!(r, vec![7,8]);
+    }
+
     /*
     /// tests behaviour of deconstructing with `if let`  in a filter
     /// I disabled it though, because this is currently experimental.
@@ -318,4 +330,5 @@ mod tests{
         assert_eq!(r, vec![JediPos::Start(1,2)]);
     }
     */
+
 }
