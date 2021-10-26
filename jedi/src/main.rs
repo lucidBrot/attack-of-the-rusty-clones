@@ -11,6 +11,9 @@ use thiserror::Error;
 extern crate text_io;
 use std::cmp::Ordering;
 use whiteread::parse_line;
+use std::path::Path;
+use std::io::BufReader;
+use std::io::File;
 
 /// a JediPos can either be a start or end position of a Jedi interval.
 /// It contains the segment id where it is located.
@@ -224,25 +227,6 @@ fn main() -> Result<(), MainErrors> {
     //          It features parse_line()? and parse_string("1 3 4")?
     //
 
-    // testing enum order:
-    let mut dbg_vec2 = vec![
-        JediPos::End(1, 1),
-        JediPos::Start(1, 1),
-        JediPos::Start(2, 1),
-        JediPos::Start(1, 2),
-    ];
-    dbg_vec2.sort();
-    assert_eq!(
-        dbg_vec2,
-        vec![
-            JediPos::Start(1, 1),
-            JediPos::Start(1, 2),
-            JediPos::End(1, 1),
-            JediPos::Start(2, 1)
-        ]
-    );
-
-    println!("Hello, world!");
     let num_testcases: u8 = read!();
     println!("Parsed num_testcases {}", num_testcases);
 
@@ -302,6 +286,46 @@ mod tests{
     }
 
     //TODO: write a script that generates test code for all my test files
+    /// This function takes a filename and reads `filename.in` and `filename.out`
+    /// then, runs a test for it.
+    fn test_from_files (in_file: String, out_file: String){
+        let in_path = Path::new(in_file);
+        let out_path = Path::new(out_file);
+        let file_in = match File::open(&in_path).expect("Can't open input file");
+        let file_out = match File::open(&out_path).expect("Can't open target output file");
+
+        let reader = BufReader::new(&file_in);
+        let num_testcases_str = String::new();
+        reader.read_line(&num_testcases_str);
+        let num_testcases: usize = num_testcases_str.trim().parse::<usize>().unwrap();
+
+        let out_reader = BufReader::new(&file_out);
+
+        for _t in 0..num_testcases {
+            let headline = String::new();
+            reader.read_line(headline);
+            let (n_str, m_str) = headline.trim().split_whitespace();
+            let (n, m): (u16, u32) = (n_str.parse<u16>().unwrap(), m_str.parse<u32>().unwrap());
+            let mut positions: Vec<JediPos> = Vec::with_capacity((2 * n).into());
+            for jedi_id in 0..n {
+                let line = String::new();
+                reader.read_line(line);
+                let (a_str, b_str) = line.trim().split_whitespace();
+                let (a, b): (u32, u32) = (a_str.parse<u32>().unwrap(), b_str.parse<u32>().unwrap());
+                positions.push(JediPos::Start(a, jedi_id));
+                positions.push(JediPos::End(b, jedi_id));
+            }
+
+            // sort that vec ascending
+            positions.sort();
+            let result = String::new();
+            reader.read_line(&result);
+            let res: u16 = result.trim().parse::<u16>().unwrap();
+            
+            vericfy(n, m, positions, res);
+        }
+
+    }
 
     /// tests behaviour of take_while
     /// view the output with `cargo test test_take_while -- --nocapture`
@@ -332,5 +356,27 @@ mod tests{
         assert_eq!(r, vec![JediPos::Start(1,2)]);
     }
     */
+
+    #[test]
+    fn test_enum_order (){
+
+        // testing enum order:
+        let mut dbg_vec2 = vec![
+            JediPos::End(1, 1),
+            JediPos::Start(1, 1),
+            JediPos::Start(2, 1),
+            JediPos::Start(1, 2),
+        ];
+        dbg_vec2.sort();
+        assert_eq!(
+            dbg_vec2,
+            vec![
+            JediPos::Start(1, 1),
+            JediPos::Start(1, 2),
+            JediPos::End(1, 1),
+            JediPos::Start(2, 1)
+            ]
+        );
+    }
 
 }
