@@ -260,11 +260,7 @@ mod tests{
     // import names from outer scope
     use super::*;
 
-    /// reproduces what the eric_hole.in file tests
-    #[test]
-    fn eric_hole (){
-        let (n, m) : (u16, u32) = (2, 6); 
-        let testjedivec = vec![ 1,1, 4,5, ];
+    fn vericfy (n: u16, m: u32, testjedivec: Vec<u32>, expected_result: u16){
         let mut testjedidata = testjedivec.iter().peekable();
         let mut positions: Vec<JediPos> = Vec::with_capacity((2 * n).into());
         let mut jedi_id = 0;
@@ -277,7 +273,12 @@ mod tests{
         }
 
         let result = testcase(m, n, &positions);
-        assert_eq!(result, 2, "Result was {} instead of 2", result);
+        assert_eq!(result, expected_result, "Result was {} instead of 2", result);
+    }
 
+    /// reproduces what the eric_hole.in file tests
+    #[test]
+    fn eric_hole(){
+        vericfy(2, 6, vec![1,1, 4,5], 2);
     }
 }
