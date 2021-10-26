@@ -11,9 +11,6 @@ use thiserror::Error;
 extern crate text_io;
 use std::cmp::Ordering;
 use whiteread::parse_line;
-use std::path::Path;
-use std::io::BufReader;
-use std::io::File;
 
 /// a JediPos can either be a start or end position of a Jedi interval.
 /// It contains the segment id where it is located.
@@ -291,8 +288,8 @@ mod tests{
     fn test_from_files (in_file: String, out_file: String){
         let in_path = Path::new(in_file);
         let out_path = Path::new(out_file);
-        let file_in = match File::open(&in_path).expect("Can't open input file");
-        let file_out = match File::open(&out_path).expect("Can't open target output file");
+        let file_in =  File::open(&in_path).expect("Can't open input file");
+        let file_out =  File::open(&out_path).expect("Can't open target output file");
 
         let reader = BufReader::new(&file_in);
         let num_testcases_str = String::new();
@@ -305,13 +302,13 @@ mod tests{
             let headline = String::new();
             reader.read_line(headline);
             let (n_str, m_str) = headline.trim().split_whitespace();
-            let (n, m): (u16, u32) = (n_str.parse<u16>().unwrap(), m_str.parse<u32>().unwrap());
+            let (n, m): (u16, u32) = (n_str.parse::<u16>().unwrap(), m_str.parse::<u32>().unwrap());
             let mut positions: Vec<JediPos> = Vec::with_capacity((2 * n).into());
             for jedi_id in 0..n {
                 let line = String::new();
                 reader.read_line(line);
                 let (a_str, b_str) = line.trim().split_whitespace();
-                let (a, b): (u32, u32) = (a_str.parse<u32>().unwrap(), b_str.parse<u32>().unwrap());
+                let (a, b): (u32, u32) = (a_str.parse::<u32>().unwrap(), b_str.parse::<u32>().unwrap());
                 positions.push(JediPos::Start(a, jedi_id));
                 positions.push(JediPos::End(b, jedi_id));
             }
