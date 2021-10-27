@@ -11,6 +11,10 @@ use thiserror::Error;
 extern crate text_io;
 use std::cmp::Ordering;
 use whiteread::parse_line;
+use std::io::prelude::*;
+use std::io::BufReader;
+use std::path::Path;
+use std::fs::File;
 
 /// a JediPos can either be a start or end position of a Jedi interval.
 /// It contains the segment id where it is located.
@@ -286,37 +290,41 @@ mod tests{
     /// This function takes a filename and reads `filename.in` and `filename.out`
     /// then, runs a test for it.
     fn test_from_files (in_file: String, out_file: String){
-        let in_path = Path::new(in_file);
-        let out_path = Path::new(out_file);
+        let in_path = Path::new(&in_file);
+        let out_path = Path::new(&out_file);
         let file_in =  File::open(&in_path).expect("Can't open input file");
         let file_out =  File::open(&out_path).expect("Can't open target output file");
 
-        let reader = BufReader::new(&file_in);
-        let num_testcases_str = String::new();
-        reader.read_line(&num_testcases_str);
+        let mut reader = BufReader::new(&file_in);
+        let mut num_testcases_str = String::new();
+        reader.read_line(&mut num_testcases_str);
         let num_testcases: usize = num_testcases_str.trim().parse::<usize>().unwrap();
 
         let out_reader = BufReader::new(&file_out);
 
         for _t in 0..num_testcases {
-            let headline = String::new();
-            reader.read_line(headline);
-            let (n_str, m_str) = headline.trim().split_whitespace();
-            let (n, m): (u16, u32) = (n_str.parse::<u16>().unwrap(), m_str.parse::<u32>().unwrap());
-            let mut positions: Vec<JediPos> = Vec::with_capacity((2 * n).into());
+            let mut headline = String::new();
+            reader.read_line(&mut headline);
+            let mut nm = headline.trim().split_whitespace();
+            let (n, m): (u16, u32) = (nm.next().unwrap().parse::<u16>().unwrap(), nm.next().unwrap().parse::<u32>().unwrap());
+            let mut positions: Vec<u32> = Vec::with_capacity((2 * n).into());
             for jedi_id in 0..n {
-                let line = String::new();
-                reader.read_line(line);
-                let (a_str, b_str) = line.trim().split_whitespace();
-                let (a, b): (u32, u32) = (a_str.parse::<u32>().unwrap(), b_str.parse::<u32>().unwrap());
-                positions.push(JediPos::Start(a, jedi_id));
-                positions.push(JediPos::End(b, jedi_id));
+                let mut line = String::new();
+                reader.read_line(&mut line);
+                let mut ab = line.trim().split_whitespace();
+                let (a, b): (u32, u32) = (ab.next().unwrap().parse::<u32>().unwrap(), 
+                    ab.next().unwrap().parse::<u32>().unwrap());
+                // push the start and the end as ints
+                //positions.push(JediPos::Start(a, jedi_id));
+                //positions.push(JediPos::End(b, jedi_id));
+                positions.push(a);
+                positions.push(b);
             }
 
             // sort that vec ascending
             positions.sort();
-            let result = String::new();
-            reader.read_line(&result);
+            let mut result = String::new();
+            reader.read_line(&mut result);
             let res: u16 = result.trim().parse::<u16>().unwrap();
             
             vericfy(n, m, positions, res);
