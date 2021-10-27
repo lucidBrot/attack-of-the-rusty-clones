@@ -343,6 +343,66 @@ mod tests{
         test_my_file("eric_contains");
     }
 
+    #[test]
+    fn eric_just_touching(){
+        test_my_file("eric_just_touching");
+    }
+
+    #[test]
+    fn eric_manyjedi(){
+        test_my_file("eric_manyjedi");
+    }
+
+    #[test]
+    fn eric_maxjedi(){
+        test_my_file("eric_maxjedi");
+    }
+
+    #[test]
+    fn eric_s1(){
+        test_my_file("eric_s1");
+    }
+
+    #[test]
+    fn eric_s2(){
+        test_my_file("eric_s2");
+    }
+
+    #[test]
+    fn eric_s3(){
+        test_my_file("eric_s3");
+    }
+
+    #[test]
+    fn eric_sample(){
+        test_my_file("eric_sample");
+    }
+
+    #[test]
+    fn eric_test1(){
+        test_my_file("eric_test1");
+    }
+
+    #[test]
+    fn eric_test2(){
+        test_my_file("eric_test2");
+    }
+
+    #[test]
+    fn eric_test3(){
+        test_my_file("eric_test3");
+    }
+
+    #[test]
+    fn eric_test1_pt3(){
+        test_my_file("eric_test1_pt3");
+    }
+
+    #[test]
+    fn eric_test1_pt4(){
+        test_my_file("eric_test1_pt4");
+    }
+
     /// tests behaviour of take_while
     /// view the output with `cargo test test_take_while -- --nocapture`
     #[test]
