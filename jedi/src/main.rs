@@ -178,7 +178,7 @@ fn count_edf(positions: &Vec<JediPos>, starting_jedi: JediPos, sna_index: usize)
     // jedi starts. Luckily, there are no additional checks required due to the vec being ordered
     // such that Start is less than End with the same values.
 
-    dbg![myiter.clone().take(10).collect::<Vec<&JediPos>>()];
+    //dbg![myiter.clone().take(10).collect::<Vec<&JediPos>>()];
     // The stop condition is when the encountered entry is a `JediPos::End(v, jedi_id)`
     //      where `jedi_id` == `starting_jedi_id`
     let limited_iter = myiter.take_while(|el| match el {
@@ -286,31 +286,30 @@ mod tests{
         vericfy(2, 6, vec![1,1, 4,5], 2);
     }
 
-    //TODO: write a script that generates test code for all my test files
     /// This function takes a filename and reads `filename.in` and `filename.out`
     /// then, runs a test for it.
-    fn test_from_files (in_file: String, out_file: String){
-        let in_path = Path::new(&in_file);
-        let out_path = Path::new(&out_file);
+    fn test_from_files (in_file: &str, out_file: &str){
+        let in_path = Path::new(in_file);
+        let out_path = Path::new(out_file);
         let file_in =  File::open(&in_path).expect("Can't open input file");
         let file_out =  File::open(&out_path).expect("Can't open target output file");
 
         let mut reader = BufReader::new(&file_in);
         let mut num_testcases_str = String::new();
-        reader.read_line(&mut num_testcases_str);
+        reader.read_line(&mut num_testcases_str).expect("error while reading");
         let num_testcases: usize = num_testcases_str.trim().parse::<usize>().unwrap();
 
-        let out_reader = BufReader::new(&file_out);
+        let mut out_reader = BufReader::new(&file_out);
 
         for _t in 0..num_testcases {
             let mut headline = String::new();
-            reader.read_line(&mut headline);
+            reader.read_line(&mut headline).expect("error while reading");
             let mut nm = headline.trim().split_whitespace();
             let (n, m): (u16, u32) = (nm.next().unwrap().parse::<u16>().unwrap(), nm.next().unwrap().parse::<u32>().unwrap());
             let mut positions: Vec<u32> = Vec::with_capacity((2 * n).into());
-            for jedi_id in 0..n {
+            for _jedi_id in 0..n {
                 let mut line = String::new();
-                reader.read_line(&mut line);
+                reader.read_line(&mut line).expect("error while reading");
                 let mut ab = line.trim().split_whitespace();
                 let (a, b): (u32, u32) = (ab.next().unwrap().parse::<u32>().unwrap(), 
                     ab.next().unwrap().parse::<u32>().unwrap());
@@ -324,12 +323,24 @@ mod tests{
             // sort that vec ascending
             positions.sort();
             let mut result = String::new();
-            reader.read_line(&mut result);
+            out_reader.read_line(&mut result).expect("error while reading output file");
             let res: u16 = result.trim().parse::<u16>().unwrap();
             
             vericfy(n, m, positions, res);
         }
 
+    }
+
+    /// load test file from ../atcotc/ as .in and .out file
+    fn test_my_file(name : &str){
+        let in_name = format!("../atcotc/{}.in", name);
+        let out_name = format!("../atcotc/{}.out", name);
+        test_from_files(&*in_name, &*out_name);
+    }
+
+    #[test]
+    fn eric_contains(){
+        test_my_file("eric_contains");
     }
 
     /// tests behaviour of take_while
