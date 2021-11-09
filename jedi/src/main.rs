@@ -359,48 +359,48 @@ mod tests{
     }
 
     #[test]
-    fn eric_s1(){
-        test_my_file("eric_s1");
+    fn s1(){
+        test_my_file("s1");
     }
 
     #[test]
-    fn eric_s2(){
-        test_my_file("eric_s2");
+    fn s2(){
+        test_my_file("s2");
     }
 
     #[test]
-    fn eric_s3(){
-        test_my_file("eric_s3");
+    fn s3(){
+        test_my_file("s3");
     }
 
     #[test]
-    fn eric_sample(){
-        test_my_file("eric_sample");
+    fn sample(){
+        test_my_file("sample");
     }
 
     #[test]
-    fn eric_test1(){
-        test_my_file("eric_test1");
+    fn test1(){
+        test_my_file("test1");
     }
 
     #[test]
-    fn eric_test2(){
-        test_my_file("eric_test2");
+    fn test2(){
+        test_my_file("test2");
     }
 
     #[test]
-    fn eric_test3(){
-        test_my_file("eric_test3");
+    fn test3(){
+        test_my_file("test3");
     }
 
     #[test]
-    fn eric_test1_pt3(){
-        test_my_file("eric_test1_pt3");
+    fn test1_pt3(){
+        test_my_file("test1_pt3");
     }
 
     #[test]
-    fn eric_test1_pt4(){
-        test_my_file("eric_test1_pt4");
+    fn test1_pt4(){
+        test_my_file("test1_pt4");
     }
 
     /// tests behaviour of take_while
