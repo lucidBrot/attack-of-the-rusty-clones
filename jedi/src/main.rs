@@ -344,64 +344,43 @@ mod tests{
     }
 
     #[test]
-    fn eric_just_touching(){
-        test_my_file("eric_just_touching");
-    }
-
-    #[test]
-    fn eric_manyjedi(){
-        test_my_file("eric_manyjedi");
-    }
-
-    #[test]
-    fn eric_maxjedi(){
-        test_my_file("eric_maxjedi");
-    }
-
-    #[test]
-    fn s1(){
-        test_my_file("s1");
-    }
-
-    #[test]
-    fn s2(){
-        test_my_file("s2");
-    }
-
-    #[test]
-    fn s3(){
-        test_my_file("s3");
-    }
-
-    #[test]
     fn sample(){
         test_my_file("sample");
     }
 
-    #[test]
-    fn test1(){
-        test_my_file("test1");
+    // That's getting annoying. Test the rest using a macro.
+    // This macro generates same code as above
+    macro_rules! tmf {
+        ($name:ident) => {
+            #[test]
+            fn $name() {
+                test_my_file(stringify!($name));
+            }
+        };
     }
 
-    #[test]
-    fn test2(){
-        test_my_file("test2");
-    }
-
-    #[test]
-    fn test3(){
-        test_my_file("test3");
-    }
-
-    #[test]
-    fn test1_pt3(){
-        test_my_file("test1_pt3");
-    }
-
-    #[test]
-    fn test1_pt4(){
-        test_my_file("test1_pt4");
-    }
+    tmf!(eric_manyjedi);
+    tmf!(eric_just_touching);
+    tmf!(eric_maxjedi);
+    tmf!(eric_maxjedi_moresegments);
+    tmf!(eric_minboth);
+    tmf!(eric_maxseg);
+    tmf!(eric_minjedi);
+    tmf!(eric_minseg);
+    tmf!(eric_no_overlaps);
+    tmf!(eric_overlaps);
+    tmf!(eric_overlaps_zero);
+    tmf!(eric_sameends);
+    tmf!(eric_stacking);
+    tmf!(eric_tot_seg2);
+    tmf!(s1);
+    tmf!(s2);
+    tmf!(s3);
+    tmf!(test1);
+    tmf!(test2);
+    tmf!(test3);
+    tmf!(test1_pt3);
+    tmf!(test1_pt4);
 
     /// tests behaviour of take_while
     /// view the output with `cargo test test_take_while -- --nocapture`
