@@ -15,6 +15,7 @@ use std::io::prelude::*;
 use std::io::BufReader;
 use std::path::Path;
 use std::fs::File;
+use std::collections::HashSet;
 
 /// a JediPos can either be a start or end position of a Jedi interval.
 /// It contains the segment id where it is located, and the jedi id.
@@ -190,6 +191,11 @@ fn count_edf(positions: &Vec<JediPos>, starting_jedi: JediPos, sna_index: usize)
     // start at the same time. Since n fits into a u16, we would need at most 2**16 * 8 bytes.
     // That's 512 KiB. I should have those lying around.
     // The runtime is linear in n, so that's great as well.
+    let mut allowed_jedi_id_set = HashSet::<u16>::new();
+    // the starting_jedi is always allowed.
+    allowed_jedi_id_set.insert(starting_jedi.jedi_id());
+    assert!(false, "todo: write a loop that uses this allowed_jedi_id_set\
+        and skips jedi ends that are not allowed.");
 
     //dbg![myiter.clone().take(10).collect::<Vec<&JediPos>>()];
     // The stop condition is when the encountered entry is a `JediPos::End(v, jedi_id)`
