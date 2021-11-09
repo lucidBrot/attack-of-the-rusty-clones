@@ -186,6 +186,10 @@ fn count_edf(positions: &Vec<JediPos>, starting_jedi: JediPos, sna_index: usize)
     // Looping around is no issue for this, because if I took the starting jedi (which I did)
     // then I could not take any potential jedi that had their start before the starting_jedi and
     // their end after the starting_jedi's start.
+    // This set will be at worst (n-1) jedi big - that's when all non-starting jedi
+    // start at the same time. Since n fits into a u16, we would need at most 2**16 * 8 bytes.
+    // That's 512 KiB. I should have those lying around.
+    // The runtime is linear in n, so that's great as well.
 
     //dbg![myiter.clone().take(10).collect::<Vec<&JediPos>>()];
     // The stop condition is when the encountered entry is a `JediPos::End(v, jedi_id)`
