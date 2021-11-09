@@ -17,7 +17,7 @@ use std::path::Path;
 use std::fs::File;
 
 /// a JediPos can either be a start or end position of a Jedi interval.
-/// It contains the segment id where it is located.
+/// It contains the segment id where it is located, and the jedi id.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Ord)]
 enum JediPos {
     // order matters here!
@@ -74,9 +74,11 @@ enum MainErrors {
 /// m: number of segments, counting from 1
 /// n: number of jedi, counting from 1
 /// and a vec containing all jedi's start and end point
-fn testcase(_m: u32, n: u16, positions: &Vec<JediPos>) -> u16 {
+fn testcase(m: u32, n: u16, positions: &Vec<JediPos>) -> u16 {
     // find best starting point by enumerating number of active jedi at each relevant segment.
     // A "relevant segment" is one that a jedi starts or ends at, so the segments in `positions`.
+    println!("Running testcase with m = {} and n = {}", m, n);
+    if positions.len() < 15 { dbg!(positions); }
 
     // at the first segment, there will be two cases:
     //   * it's a start: There will be 1 active jedi count
@@ -177,6 +179,13 @@ fn count_edf(positions: &Vec<JediPos>, starting_jedi: JediPos, sna_index: usize)
     // Ignoring those is relevant because we can't end one jedi on the same space as our initial
     // jedi starts. Luckily, there are no additional checks required due to the vec being ordered
     // such that Start is less than End with the same values.
+    //
+    // TODO: check that the jedi I want to take has not started before the previous end.
+    // i.e. the set of jedi we are allowed to take is limited to the ones I have seen starting
+    // during the iteration. Whenever I take any End, this set is emptied again. 
+    // Looping around is no issue for this, because if I took the starting jedi (which I did)
+    // then I could not take any potential jedi that had their start before the starting_jedi and
+    // their end after the starting_jedi's start.
 
     //dbg![myiter.clone().take(10).collect::<Vec<&JediPos>>()];
     // The stop condition is when the encountered entry is a `JediPos::End(v, jedi_id)`
@@ -192,6 +201,7 @@ fn count_edf(positions: &Vec<JediPos>, starting_jedi: JediPos, sna_index: usize)
 
     // sum up all ends we can.
     let result: usize = limited_iter.filter(|el| matches!(el, JediPos::End(_,_))).count();
+    println!(" result was {} jedi.\n", result);
 
     return result as u16;
 }
@@ -273,11 +283,11 @@ mod tests{
             positions.push(JediPos::Start(a, jedi_id));
             positions.push(JediPos::End(b, jedi_id));
             if let None = testjedidata.peek() { break; }
-            else { println!("Another round!"); }
+            else { println!("[vericfy]: Another round!"); }
         }
 
         let result = testcase(m, n, &positions);
-        assert_eq!(result, expected_result, "Result was {} instead of 2", result);
+        assert_eq!(result, expected_result, "Result was {} instead of {}", result, expected_result);
     }
 
     /// reproduces what the eric_hole.in file tests
