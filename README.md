@@ -1,5 +1,9 @@
 Learning rust by solving an Algolab task I failed to code in c++ thirteen times, with the master solution open. What could go wrong?
 
+
+
+Below notes are mostly for me, but they miight be helpful for you too. If for some reason you want to see the idea of the Attack of the Clone task coded in rust instead of c++.
+
 <hr/>
 
 ## Task
@@ -117,3 +121,24 @@ https://stackoverflow.com/a/26643821/2550406
 https://blog.burntsushi.net/rust-error-handling/
 
 https://stackoverflow.com/questions/48430836/rust-proper-error-handling-auto-convert-from-one-error-type-to-another-with-que
+
+### Testing
+
+I wrote a macro and some functions, so that if I have files `test1.in` and `test1.out` I just have to write in my tests module:
+
+```
+#[cfg(test)]
+mod tests{
+	use super::*;
+	
+	tmf!(test1); // test my file "test1.in"
+	tmf!(my_custom_test); // test my file "my_custom_test.in"
+
+}
+```
+
+## Running On Code Expert
+
+==TODO==
+
+I guess it could work by compiling to assembly and using it inline in c++...?
