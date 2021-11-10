@@ -196,21 +196,26 @@ fn count_edf(positions: &Vec<JediPos>, starting_jedi: JediPos, sna_index: usize)
     allowed_jedi_id_set.insert(starting_jedi.jedi_id());
     assert!(false, "todo: write a loop that uses this allowed_jedi_id_set\
         and skips jedi ends that are not allowed.");
-
-    //dbg![myiter.clone().take(10).collect::<Vec<&JediPos>>()];
-    // The stop condition is when the encountered entry is a `JediPos::End(v, jedi_id)`
-    //      where `jedi_id` == `starting_jedi_id`
-    let limited_iter = myiter.take_while(|el| match el {
-        JediPos::End(_, _) => true,
-        JediPos::Start(_v, jedi_id) => *jedi_id != starting_jedi_id,
-        // the first entry encountered that breaks the chain is still included if I
-        // read the docs correctly, but not according to 
-        // https://github.com/rust-lang/rust/issues/62208
-        // My test shows that it is not included anymore.
-    });
-
-    // sum up all ends we can.
-    let result: usize = limited_iter.filter(|el| matches!(el, JediPos::End(_,_))).count();
+    let mut result: u16 = 0;
+    for jedipos in myiter {
+        match jedipos {
+            JediPos::Start(_v, jedi_id) => {
+                // stop the iteration when we find the start of the starting jedi
+                if *jedi_id == starting_jedi_id { break; };
+                // add the jedi that just started to the set of allowed jedi
+                allowed_jedi_id_set.insert(*jedi_id);
+            },
+            JediPos::End(_v, jedi_id) => {
+                // if the jedi is allowed, take it  
+                if allowed_jedi_id_set.contains(*jedi_id) {
+                    result += 1;
+                    // if the jedi was taken, all valid jedi so far are now
+                    // no longer allowed to be taken because they overlap
+                    allowed_jedi_id_set.remove(*jedi_id);
+                }
+            }
+        };
+    }
     println!(" result was {} jedi.\n", result);
 
     return result as u16;
