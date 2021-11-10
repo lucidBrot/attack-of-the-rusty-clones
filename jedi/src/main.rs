@@ -293,9 +293,9 @@ mod tests{
     use super::*;
 
     fn vericfy (n: u16, m: u32, testjedivec: Vec<u32>, expected_result: u16){
-        dbg!(testjedivec.clone());
+        if testjedivec.len() < 15 { dbg!(testjedivec.clone()); }
         let mut testjedidata = testjedivec.iter().peekable();
-        let mut positions: Vec<JediPos> = Vec::with_capacity((2 * n).into());
+        let mut positions: Vec<JediPos> = Vec::with_capacity((2 * usize::from(n)).into());
         let mut jedi_id = 0;
         loop {
             let a = *(testjedidata.next().unwrap());
@@ -340,7 +340,7 @@ mod tests{
             reader.read_line(&mut headline).expect("error while reading");
             let mut nm = headline.trim().split_whitespace();
             let (n, m): (u16, u32) = (nm.next().unwrap().parse::<u16>().unwrap(), nm.next().unwrap().parse::<u32>().unwrap());
-            let mut positions: Vec<u32> = Vec::with_capacity((2 * n).into());
+            let mut positions: Vec<u32> = Vec::with_capacity((2 * usize::from(n)).into());
             for _jedi_id in 0..n {
                 let mut line = String::new();
                 reader.read_line(&mut line).expect("error while reading");
@@ -376,6 +376,11 @@ mod tests{
     }
 
     #[test]
+    fn eric_maxjedi_smol(){
+        test_my_file("eric_maxjedi");
+    }
+
+    #[test]
     fn sample(){
         test_my_file("sample");
     }
@@ -393,7 +398,6 @@ mod tests{
 
     tmf!(eric_manyjedi);
     tmf!(eric_just_touching);
-    tmf!(eric_maxjedi);
     tmf!(eric_maxjedi_moresegments);
     tmf!(eric_minboth);
     tmf!(eric_maxseg);
