@@ -78,6 +78,8 @@ Assume for a moment that the circle is not actually happening. Then we always pi
 
 So we conclude that we choose by EDF.
 
+Of course we have to ignore jedi that overlap with already picked ones. For this I keep track of all jedi `Start`s that happened since the last `End` of a jedi I picked. That could be done with a constant-access array of size $n$ but I just use a hashset, since order does not matter to me and I want to clear the whole set easily every time I add a new `End` and hence invalidate all the jedi that started before that (and are thus already in the set but should no longer be).
+
 #### It's a Circle though
 
 when do we stop? 
