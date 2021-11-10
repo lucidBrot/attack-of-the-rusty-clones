@@ -337,7 +337,9 @@ mod tests{
 
         for _t in 0..num_testcases {
             let mut headline = String::new();
-            reader.read_line(&mut headline).expect("error while reading");
+            while headline.trim().is_empty() {
+                reader.read_line(&mut headline).expect("error while reading");
+            }
             let mut nm = headline.trim().split_whitespace();
             let (n, m): (u16, u32) = (nm.next().unwrap().parse::<u16>().unwrap(), nm.next().unwrap().parse::<u32>().unwrap());
             let mut positions: Vec<u32> = Vec::with_capacity((2 * usize::from(n)).into());
@@ -405,7 +407,7 @@ mod tests{
     tmf!(eric_minseg);
     tmf!(eric_no_overlaps);
     tmf!(eric_overlaps);
-    tmf!(eric_overlaps_zero);
+    tmf!(eric_overlap_zero);
     tmf!(eric_sameends);
     tmf!(eric_stacking);
     tmf!(eric_tot_seg2);
