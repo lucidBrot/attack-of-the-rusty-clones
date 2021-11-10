@@ -202,18 +202,22 @@ fn count_edf(positions: &Vec<JediPos>, starting_jedi: JediPos, sna_index: usize)
                 // stop the iteration when we find the start of the starting jedi
                 if *jedi_id == starting_jedi_id { break; };
                 // add the jedi that just started to the set of allowed jedi
+                // Since all Start happen before all End, this is ok even if there are
+                // start and end on the same segment
                 allowed_jedi_id_set.insert(*jedi_id);
+                println!("Encountered Start of jedi_id={}, allowing it...", jedi_id);
                 // we expect here that there are no jedi ends before the jedi starts in the 
                 // same segment. So we don't take any one on accident.
             },
             JediPos::End(_v, jedi_id) => {
                 // if the jedi is allowed, take it  
                 if allowed_jedi_id_set.contains(jedi_id) {
+                    println!("Encountered End of jedi_id={} and took it because it was allowed.", jedi_id);
                     result += 1;
                     // if the jedi was taken, all valid jedi so far are now
                     // no longer allowed to be taken because they overlap
-                    allowed_jedi_id_set.remove(jedi_id);
-                }
+                    allowed_jedi_id_set.clear();
+                } 
             }
         };
     }
@@ -289,6 +293,7 @@ mod tests{
     use super::*;
 
     fn vericfy (n: u16, m: u32, testjedivec: Vec<u32>, expected_result: u16){
+        dbg!(testjedivec.clone());
         let mut testjedidata = testjedivec.iter().peekable();
         let mut positions: Vec<JediPos> = Vec::with_capacity((2 * n).into());
         let mut jedi_id = 0;
@@ -298,9 +303,12 @@ mod tests{
             jedi_id += 1;
             positions.push(JediPos::Start(a, jedi_id));
             positions.push(JediPos::End(b, jedi_id));
+            println!("[vericfy]: storing Start({},id={}), End({},id={})", a, jedi_id, b, jedi_id);
             if let None = testjedidata.peek() { break; }
-            else { println!("[vericfy]: Another round!"); }
         }
+
+        // sort that vec ascending
+        positions.sort();
 
         let result = testcase(m, n, &positions);
         assert_eq!(result, expected_result, "Result was {} instead of {}", result, expected_result);
@@ -346,8 +354,6 @@ mod tests{
                 positions.push(b);
             }
 
-            // sort that vec ascending
-            positions.sort();
             let mut result = String::new();
             out_reader.read_line(&mut result).expect("error while reading output file");
             let res: u16 = result.trim().parse::<u16>().unwrap();
