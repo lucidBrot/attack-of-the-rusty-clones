@@ -194,8 +194,7 @@ fn count_edf(positions: &Vec<JediPos>, starting_jedi: JediPos, sna_index: usize)
     let mut allowed_jedi_id_set = HashSet::<u16>::new();
     // the starting_jedi is always allowed.
     allowed_jedi_id_set.insert(starting_jedi.jedi_id());
-    assert!(false, "todo: write a loop that uses this allowed_jedi_id_set\
-        and skips jedi ends that are not allowed.");
+
     let mut result: u16 = 0;
     for jedipos in myiter {
         match jedipos {
@@ -204,14 +203,16 @@ fn count_edf(positions: &Vec<JediPos>, starting_jedi: JediPos, sna_index: usize)
                 if *jedi_id == starting_jedi_id { break; };
                 // add the jedi that just started to the set of allowed jedi
                 allowed_jedi_id_set.insert(*jedi_id);
+                // we expect here that there are no jedi ends before the jedi starts in the 
+                // same segment. So we don't take any one on accident.
             },
             JediPos::End(_v, jedi_id) => {
                 // if the jedi is allowed, take it  
-                if allowed_jedi_id_set.contains(*jedi_id) {
+                if allowed_jedi_id_set.contains(jedi_id) {
                     result += 1;
                     // if the jedi was taken, all valid jedi so far are now
                     // no longer allowed to be taken because they overlap
-                    allowed_jedi_id_set.remove(*jedi_id);
+                    allowed_jedi_id_set.remove(jedi_id);
                 }
             }
         };
