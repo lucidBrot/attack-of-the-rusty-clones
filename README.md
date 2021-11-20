@@ -142,3 +142,11 @@ mod tests{
 ==TODO==
 
 I guess it could work by compiling to assembly and using it inline in c++...?
+
+## Other
+
+If I ever want to find this link again that discusses interoperating between c++ and rust by going through C, I will find it here.
+
+* https://hsivonen.fi/modern-cpp-in-rust/
+* https://docs.rust-embedded.org/book/interoperability/rust-with-c.html
+* https://github.com/eqrion/cbindgen
